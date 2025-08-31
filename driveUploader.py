@@ -45,12 +45,13 @@ class Uploader():
             folder_id = folder_target["files"][0]["id"]
             folder_name = folder_target["files"][0]["name"]
             file =  file_path
+            file_name = file.split("/")[-1:][0]
 
             print(folder_target)
             print(folder_id)
 
             file_metadata = {
-                "name": "test",
+                "name": file_name,
                 "parents": [folder_id]}
             
             media = MediaFileUpload(file)
@@ -58,13 +59,9 @@ class Uploader():
                                                 media_body = media,
                                                 fields = "id").execute()
             
-            print(f"{file} uploaded to google drive folder {folder_name} succesfully!")
+            print(f"{file_name} uploaded to google drive folder {folder_name} succesfully!")
 
         except HttpError as e:
             print("error: " + str(e))
 
 
-UP = Uploader()
-asset_path = "test.obj"
-
-UP.driveUploader(asset_path)
