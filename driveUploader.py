@@ -1,58 +1,70 @@
-import os
-import os.path
+class Uploader():
+    def __init__(self):
+        pass
 
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from googleapiclient.http import MediaFileUpload
+    def driveUploader(self, file_path):
 
-SCOPES = ["https://www.googleapis.com/auth/drive"]
+        import os
+        import os.path
 
-creds = None
+        from google.auth.transport.requests import Request
+        from google.oauth2.credentials import Credentials
+        from google_auth_oauthlib.flow import InstalledAppFlow
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
+        from googleapiclient.http import MediaFileUpload
 
-if os.path.exists("token.json"):
-    creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+        SCOPES = ["https://www.googleapis.com/auth/drive"]
 
-if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
-              creds.refresh(Request())
-    
-        else:
-              flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
-              creds = flow.run_local_server(port=0)
+        creds = None
 
-        with open("token.json", "w") as token:
-              token.write(creds.to_json())
+        if os.path.exists("token.json"):
+            creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+
+        if not creds or not creds.valid:
+                if creds and creds.expired and creds.refresh_token:
+                    creds.refresh(Request())
+            
+                else:
+                    flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+                    creds = flow.run_local_server(port=0)
+
+                with open("token.json", "w") as token:
+                    token.write(creds.to_json())
 
 
-try:
+        try:
 
-    service = build("drive", "v3", credentials=creds)
+            service = build("drive", "v3", credentials=creds)
 
-    folder_target = service.files().list(
-         q="name='rebelway_python_2025' and mimeType='application/vnd.google-apps.folder'",
-         spaces="drive"
-    ).execute()
-    
-    folder_id = folder_target["files"][0]["id"]
-    folder_name = folder_target["files"][0]["name"]
-    file =  "test.obj"
+            folder_target = service.files().list(
+                q="name='rebelway_python_2025' and mimeType='application/vnd.google-apps.folder'",
+                spaces="drive"
+            ).execute() ### I created a folder in google drive previously named "rebelway_python_2025". I already know the name of the folder so I can list all the parameters such id, etc
+            
+            folder_id = folder_target["files"][0]["id"]
+            folder_name = folder_target["files"][0]["name"]
+            file =  file_path
 
-    print(folder_target)
-    print(folder_id)
+            print(folder_target)
+            print(folder_id)
 
-    file_metadata = {
-        "name": "test",
-        "parents": [folder_id]}
-    
-    media = MediaFileUpload(file)
-    upload_file = service.files().create(body=file_metadata,
-                                         media_body = media,
-                                         fields = "id").execute()
-    
-    print(f"{file} uploaded to google drive folder {folder_name} succesfully!")
+            file_metadata = {
+                "name": "test",
+                "parents": [folder_id]}
+            
+            media = MediaFileUpload(file)
+            upload_file = service.files().create(body=file_metadata,
+                                                media_body = media,
+                                                fields = "id").execute()
+            
+            print(f"{file} uploaded to google drive folder {folder_name} succesfully!")
 
-except HttpError as e:
-    print("error: " + str(e))
+        except HttpError as e:
+            print("error: " + str(e))
+
+
+UP = Uploader()
+asset_path = "test.obj"
+
+UP.driveUploader(asset_path)
