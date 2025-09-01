@@ -64,4 +64,3 @@ class Uploader():
         except HttpError as e:
             print("error: " + str(e))
 
-
