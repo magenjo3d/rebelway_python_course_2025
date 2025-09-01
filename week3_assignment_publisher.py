@@ -2,7 +2,7 @@
 
 #import hou
 import os
-from driveUploader import Uploader
+from googledrive_uploader import Uploader
 
 class Publisher:
     def __init__(self):
@@ -11,6 +11,7 @@ class Publisher:
         self.version = None
         self.path = None
         self.user = None
+        self.check_asset = False
     
     def set_publish_path(self): # 2) Func to get the string from the search field
     
@@ -30,6 +31,22 @@ class Publisher:
         my_hda.parm("execute").pressButton()"""
         
         self.path = "C:/Users/Miguel/houdini/geo/myAsset/v1/myAsset_geo.abc"
-        print(self.path)
+        self.check_asset = True
         
-        Uploader.driveUploader(self.path)
+        print("asset saved to disk!: ", self.path)
+
+
+    def upload_to_drive(self):
+        
+        asset_path = self.path
+
+        if self.check_asset is True:
+            Up = Uploader()
+            Up.driveUploader(asset_path)
+
+        else:
+            print("Publish the asset in disk first!")
+
+Pu = Publisher()
+Pu.set_publish_path()
+Pu.upload_to_drive()
